@@ -22,6 +22,12 @@ client = OpenAI(
 def home(request):
     return render(request, "index.html")
 
+def resume(request):
+    if "log_id" not in request.session:
+        messages.error(request, "Please login first")
+        return redirect("/login")
+    return render(request, "resume.html")
+
 def fetchresumedata(request):
     if "log_id" not in request.session:
         messages.error(request, "Please login first")
