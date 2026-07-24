@@ -1,0 +1,49 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow">
+
+<div class="container">
+
+<a class="navbar-brand fw-bold fs-3"
+   href="{% if request.session.log_id %}/welcome{% else %}/{% endif %}">
+    ResumeAI 🚀
+</a>
+<div class="d-flex align-items-center gap-3">
+
+{% if request.session.log_id %}
+
+    <a href="/welcome" class="text-white text-decoration-none">Home</a>
+
+    <a href="/templates" class="text-white text-decoration-none">Templates</a>
+
+    <a href="/resumelist" class="text-white text-decoration-none">My Resumes</a>
+
+    <a href="/resume" class="btn btn-light">Create Resume</a>
+
+    <a href="/logout" class="btn btn-danger">Logout</a>
+
+{% else %}
+
+    <a href="/" class="text-white text-decoration-none">Home</a>
+
+    {% if request.path == "/login" %}
+
+        <a href="/user" class="btn btn-warning">Register</a>
+
+    {% elif request.path == "/user" %}
+
+        <a href="/login" class="btn btn-light">Login</a>
+
+    {% else %}
+
+        <a href="/login" class="btn btn-light">Login</a>
+
+        <a href="/user" class="btn btn-warning">Register</a>
+
+    {% endif %}
+
+{% endif %}
+
+</div>
+
+</div>
+
+</nav>

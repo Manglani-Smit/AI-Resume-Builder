@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<title>Minimal Resume</title>
+
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+
+<div class="resume-paper">
+
+    <div class="border-bottom pb-3 mb-4">
+
+        <h2 class="text-uppercase fw-bold">
+
+            {{ resume.name }}
+
+        </h2>
+
+        <small class="text-muted">
+
+            <i class="bi bi-envelope"></i>
+
+            {{ resume.email }}
+
+            &nbsp;&nbsp;
+
+            <i class="bi bi-telephone"></i>
+
+            {{ resume.phone }}
+
+        </small>
+
+    </div>
+
+    <h5>Career Objective</h5>
+
+    <p>{{ resume.objective }}</p>
+
+    <br>
+
+    <h5>Professional Summary</h5>
+
+    <p>{{ resume.summary }}</p>
+
+    <br>
+
+    <h5>Projects</h5>
+
+    <p>{{ resume.projects }}</p>
+
+    <br>
+
+    <h5>Skills</h5>
+
+    <ul>
+
+        {% for skill in skills %}
+
+        <li>{{ skill }}</li>
+
+        {% endfor %}
+
+    </ul>
+
+    <br>
+
+    <h5>Education</h5>
+
+    <p>{{ resume.education }}</p>
+
+    <br>
+
+    <h5>Experience</h5>
+
+    <p>{{ resume.experience }}</p>
+
+    <br>
+
+    <h5>Certifications</h5>
+
+    <p>{{ resume.certifications }}</p>
+
+    <br>
+
+    <h5>Achievements</h5>
+
+    <p>{{ resume.achievements }}</p>
+
+</div>
+
+{% if not pdf %}
+
+<div class="text-center mt-4">
+
+<a href="/resume_pdf/{{ resume.id }}"
+class="btn btn-success">
+
+Download PDF
+
+</a>
+
+</div>
+
+{% endif %}
+
+</div>
+
+</body>
+
+</html>

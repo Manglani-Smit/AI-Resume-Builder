@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resume PDF</title>
+</head>
+<body>
+{% if messages %}
+{% for message in messages %}
+<script>alert("{{message}}")</script>
+{% endfor %}
+{% endif %}
+
+<h1>{{ resume.name }} </h1>
+
+<hr>
+
+<h3>Email</h3>
+
+<p>📧{{ resume.email }}</p>
+
+<h3>Phone</h3>
+
+<p>📱 {{ resume.phone }}</p>
+
+<h3>Skills</h3>
+
+{% for skill in skills %}
+
+<p>- {{ skill }}</p>
+
+{% endfor %}
+
+<h3>Education</h3>
+
+<p>🎓 {{ resume.education }}</p>
+
+<p>✨ {{ resume.summary }}</p>
+</body>
+</html>

@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<title>Templates</title>
+
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+<h1 class="text-center mb-5">
+Choose Your Resume Template
+</h1>
+  <!-- 1. Modern Template (Zack, Python Developer, Skills, Education) -->
+<div class="card shadow">
+    <div class="p-4 bg-white" style="height:400px;">
+        <h3 class="text-center">Zack</h3>
+        <p class="text-center text-muted">Python Developer</p>
+        <hr>
+        <p><strong>Skills</strong></p>
+        <ul>
+            <li>Python</li>
+            <li>Django</li>
+            <li>MySQL</li>
+        </ul>
+        <hr>
+        <p><strong>Education</strong></p>
+        <p>BCA</p>
+    </div>
+    <div class="card-body text-center">
+        <h4>Modern Template</h4>
+        <p class="text-muted">ATS Friendly Template</p>
+        <a href="/select-template/1"
+   class="btn btn-success w-100">
+    Use This Template
+</a>
+    </div>
+</div>
+
+<br><br>
+
+<!-- 2. Professional Template (Zack, Profile, Experience, Skills) -->
+<div class="card shadow">
+    <div class="p-4 bg-white" style="height:400px;">
+        <h3>Zack</h3>
+        <hr>
+        <p><strong>Profile</strong></p>
+        <p style="font-size: 14px;">Detail-oriented backend developer focused on building scalable web apps.</p>
+        <hr>
+        <p><strong>Experience</strong></p>
+        <p class="mb-0"><strong>Backend Intern</strong> - Tech Corp</p>
+        <small class="text-muted">Worked on REST APIs using Django.</small>
+        <hr>
+        <p><strong>Skills</strong></p>
+        <p>Python, Git, MySQL</p>
+    </div>
+    <div class="card-body text-center">
+        <h4>Professional Template</h4>
+        <p class="text-muted">ATS Friendly Template</p>
+        <a href="/select-template/2"
+   class="btn btn-success w-100">
+    Use This Template
+</a>
+    </div>
+</div>
+
+<br><br>
+
+<!-- 3. Minimal Template (Name, Objective, Projects, Education) -->
+<div class="card shadow">
+    <div class="p-4 bg-white" style="height:400px;">
+        <div class="border-bottom pb-2 mb-2">
+            <h4 class="text-uppercase tracking-wide">Zack Kumar</h4>
+        </div>
+        <p><strong>Objective</strong></p>
+        <p style="font-size: 13px;">Seeking a challenging role to leverage my web development and database management skills.</p>
+        <p><strong>Projects</strong></p>
+        <ul style="padding-left: 20px; font-size: 14px;">
+            <li>E-Commerce API Architecture</li>
+            <li>Task Management Dashboard</li>
+        </ul>
+        <p><strong>Education</strong></p>
+        <p class="mb-0">Bachelor of Computer Applications (BCA)</p>
+    </div>
+    <div class="card-body text-center">
+        <h4>Minimal Template</h4>
+        <p class="text-muted">ATS Friendly Template</p>
+        <a href="/select-template/3"
+   class="btn btn-success w-100">
+    Use This Template
+</a>
+    </div>
+</div>
+
+<br><br>
+
+<!-- 4. Creative Template (Sidebar Style: Skills, Languages, Education) -->
+<div class="card shadow">
+    <div class="p-4 bg-white" style="height:400px;">
+        <div class="row h-100 g-0">
+            <!-- Sidebar Area -->
+            <div class="col-5 bg-light p-2 border-end" style="font-size: 13px;">
+                <h5 class="fw-bold text-primary">Zack</h5>
+                <p class="text-muted">Developer</p>
+                <hr class="my-2">
+                <p class="mb-1"><strong>Skills</strong></p>
+                <ul class="list-unstyled ps-1">
+                    <li>• Python</li>
+                    <li>• Django</li>
+                </ul>
+                <p class="mb-1"><strong>Languages</strong></p>
+                <ul class="list-unstyled ps-1">
+                    <li>• English</li>
+                    <li>• Hindi</li>
+                </ul>
+            </div>
+            <!-- Main Content Area -->
+            <div class="col-7 p-2 ps-3">
+                <p class="mb-1"><strong>Education</strong></p>
+                <p class="mb-0 fw-bold" style="font-size: 14px;">BCA Degree</p>
+                <p class="text-muted" style="font-size: 12px;">Gujarat University</p>
+            </div>
+        </div>
+    </div>
+    <div class="card-body text-center">
+        <h4>Creative Template</h4>
+        <p class="text-muted">ATS Friendly Template</p>
+        <a href="/select-template/4"
+   class="btn btn-success w-100">
+    Use This Template
+</a>
+    </div>
+</div>
+
+<br><br>
+
+<!-- 5. Executive Template (Professional Summary, Skills, Projects, Certificates) -->
+<div class="card shadow">
+    <div class="p-4 bg-white" style="height:400px; overflow: hidden;">
+        <h4 class="border-bottom pb-1">Zack</h4>
+        <p class="mb-2" style="font-size: 12px; line-height: 1.4;"><strong>Professional Summary:</strong> Result-driven Python developer adept at optimizing database queries and constructing robust backend architecture using Django.</p>
+
+        <p class="mb-1"><strong>Skills:</strong> <span class="badge bg-secondary">Python</span> <span class="badge bg-secondary">Django</span> <span class="badge bg-secondary">MySQL</span></p>
+
+        <p class="mb-1"><strong>Projects:</strong></p>
+        <p class="mb-1" style="font-size: 13px;">• <em>Inventory System:</em> Automated stock tracking using Python.</p>
+
+        <p class="mb-1"><strong>Certificates:</strong></p>
+        <p style="font-size: 13px;" class="mb-0">• Advanced Python Programming Certification</p>
+    </div>
+    <div class="card-body text-center">
+        <h4>Executive Template</h4>
+        <p class="text-muted">ATS Friendly Template</p>
+        <a href="/select-template/5"
+   class="btn btn-success w-100">
+    Use This Template
+</a>
+    </div>
+</div>
+</div>
+
+</body>
+
+</html>
