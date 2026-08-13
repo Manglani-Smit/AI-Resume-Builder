@@ -1,129 +1,97 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
-
-<title>Creative Resume</title>
-
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <title>Creative Resume - {{ resume.name }}</title>
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .resume-paper { background: #ffffff; max-width: 850px; margin: 0 auto; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        .sidebar { background-color: #212529; color: #ffffff; }
+        .section-header { border-bottom: 2px solid #0d6efd; padding-bottom: 5px; margin-bottom: 15px; font-weight: 700; color: #0d6efd; }
+    </style>
 </head>
+<body>
 
-<body class="bg-light">
+<div class="container my-4">
+    <div class="resume-paper rounded-3 overflow-hidden">
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <div class="col-md-4 sidebar p-4">
+                <h2 class="fw-bold text-white mb-3">{{ resume.name }}</h2>
 
-<div class="container mt-5">
+                <p class="mb-2 text-light"><i class="bi bi-envelope-fill me-2 text-primary"></i>{{ resume.email }}</p>
+                <p class="mb-4 text-light"><i class="bi bi-telephone-fill me-2 text-primary"></i>{{ resume.phone }}</p>
 
-<div class="resume-paper p-0 overflow-hidden">
+                <hr class="border-secondary">
 
-<div class="row g-0">
+                <h5 class="fw-bold text-primary mb-3">Skills</h5>
+                <ul class="list-unstyled">
+                    {% for skill in skills %}
+                        <li class="mb-1">⚡ {{ skill }}</li>
+                    {% endfor %}
+                </ul>
 
-    <!-- Sidebar -->
+                <hr class="border-secondary my-4">
 
-    <div class="col-md-4 bg-dark text-white p-4">
+                <h5 class="fw-bold text-primary mb-3">Education</h5>
+                <p class="text-light">{{ resume.education|linebreaks }}</p>
+            </div>
 
-        <h2 class="fw-bold">{{ resume.name }}</h2>
+            <!-- Main Content -->
+            <div class="col-md-8 p-4 bg-white">
+                {% if resume.summary %}
+                    <h5 class="section-header">Professional Summary</h5>
+                    <p class="text-secondary">{{ resume.summary }}</p>
+                {% endif %}
 
-        <p>
+                {% if resume.objective %}
+                    <h5 class="section-header">Career Objective</h5>
+                    <p class="text-secondary">{{ resume.objective }}</p>
+                {% endif %}
 
-            <i class="bi bi-envelope-fill"></i>
+                {% if resume.projects %}
+                    <h5 class="section-header">Projects</h5>
+                    {% if resume.projects|length > 0 %}
+                        {% for proj in resume.projects %}
+                            <div class="mb-3">
+                                <h6 class="fw-bold text-dark mb-1">🚀 {{ proj.title }}</h6>
+                                <p class="text-secondary small mb-0">{{ proj.description }}</p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-secondary">{{ resume.projects }}</p>
+                    {% endif %}
+                {% endif %}
 
-            {{ resume.email }}
+                {% if resume.experience %}
+                    <h5 class="section-header">Experience</h5>
+                    <p class="text-secondary">{{ resume.experience|linebreaks }}</p>
+                {% endif %}
 
-        </p>
+                {% if resume.certifications %}
+                    <h5 class="section-header">Certifications</h5>
+                    <p class="text-secondary">{{ resume.certifications|linebreaks }}</p>
+                {% endif %}
 
-        <p>
-
-            <i class="bi bi-telephone-fill"></i>
-
-            {{ resume.phone }}
-
-        </p>
-
-        <hr>
-
-        <h5>Skills</h5>
-
-        <ul class="list-unstyled">
-
-        {% for skill in skills %}
-
-            <li>• {{ skill }}</li>
-
-        {% endfor %}
-
-        </ul>
-
-        <hr>
-
-        <h5>Education</h5>
-
-        <p>{{ resume.education }}</p>
-
+                {% if resume.achievements %}
+                    <h5 class="section-header">Achievements</h5>
+                    <p class="text-secondary">{{ resume.achievements|linebreaks }}</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
-    <!-- Main -->
-
-    <div class="col-md-8 p-4">
-
-        <h4>Professional Summary</h4>
-
-        <p>{{ resume.summary }}</p>
-
-        <hr>
-
-        <h4>Career Objective</h4>
-
-        <p>{{ resume.objective }}</p>
-
-        <hr>
-
-        <h4>Projects</h4>
-
-        <p>{{ resume.projects }}</p>
-
-        <hr>
-
-        <h4>Experience</h4>
-
-        <p>{{ resume.experience }}</p>
-
-        <hr>
-
-        <h4>Certifications</h4>
-
-        <p>{{ resume.certifications }}</p>
-
-        <hr>
-
-        <h4>Achievements</h4>
-
-        <p>{{ resume.achievements }}</p>
-
-    </div>
-
-</div>
-
-</div>
-
-{% if not pdf %}
-
-<div class="text-center mt-4">
-
-<a href="/resume_pdf/{{ resume.id }}" class="btn btn-success">
-
-Download PDF
-
-</a>
-
-</div>
-
-{% endif %}
-
+    {% if not pdf %}
+        <div class="text-center my-4">
+            <a href="/resume_pdf/{{ resume.id }}" class="btn btn-success btn-lg rounded-pill px-5 fw-bold shadow">
+                <i class="bi bi-download me-2"></i> Download PDF
+            </a>
+        </div>
+    {% endif %}
 </div>
 
 </body>
-
 </html>

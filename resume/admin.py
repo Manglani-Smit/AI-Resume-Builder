@@ -1,12 +1,12 @@
 from django.contrib import admin
-from .models import *
-# Register your models here.
+from .models import Resume, User
+
+@admin.register(Resume)
 class ResumeAdmin(admin.ModelAdmin):
-    list_display = ["name","email","phone","skills","education","created_at","summary","template_id","projects","experience","certifications","achievements","objective"]
+    list_display = ["id", "name", "email", "phone", "created_at"]
+    search_fields = ["name", "email"]
 
-admin.site.register(Resume, ResumeAdmin)
-
+@admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ["Name","Email","Phone","Password"]
-
-admin.site.register(User, UserAdmin)
+    list_display = ["id", "Name", "Email", "Phone", "is_premium", "daily_generations_left"]
+    search_fields = ["Name", "Email"]

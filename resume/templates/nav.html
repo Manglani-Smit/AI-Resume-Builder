@@ -1,49 +1,46 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow">
+<nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm sticky-top py-2">
+    <div class="container">
+        <!-- Brand Logo -->
+        <a class="navbar-brand fw-bold text-primary fs-4 d-flex align-items-center gap-2" href="{% if request.session.log_id %}/welcome{% else %}/{% endif %}">
+            <i class="bi bi-file-earmark-person-fill fs-3"></i> ResumeAI
+        </a>
 
-<div class="container">
+        <!-- Mobile Toggler -->
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#appNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-<a class="navbar-brand fw-bold fs-3"
-   href="{% if request.session.log_id %}/welcome{% else %}/{% endif %}">
-    ResumeAI 🚀
-</a>
-<div class="d-flex align-items-center gap-3">
-
-{% if request.session.log_id %}
-
-    <a href="/welcome" class="text-white text-decoration-none">Home</a>
-
-    <a href="/templates" class="text-white text-decoration-none">Templates</a>
-
-    <a href="/resumelist" class="text-white text-decoration-none">My Resumes</a>
-
-    <a href="/resume" class="btn btn-light">Create Resume</a>
-
-    <a href="/logout" class="btn btn-danger">Logout</a>
-
-{% else %}
-
-    <a href="/" class="text-white text-decoration-none">Home</a>
-
-    {% if request.path == "/login" %}
-
-        <a href="/user" class="btn btn-warning">Register</a>
-
-    {% elif request.path == "/user" %}
-
-        <a href="/login" class="btn btn-light">Login</a>
-
-    {% else %}
-
-        <a href="/login" class="btn btn-light">Login</a>
-
-        <a href="/user" class="btn btn-warning">Register</a>
-
-    {% endif %}
-
-{% endif %}
-
-</div>
-
-</div>
-
+        <!-- Navbar Links -->
+        <div class="collapse navbar-collapse" id="appNavbar">
+            <div class="navbar-nav ms-auto align-items-center gap-2 mt-3 mt-lg-0">
+                {% if request.session.log_id %}
+                    <a href="/welcome" class="nav-link fw-semibold px-3 text-dark">
+                        <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                    </a>
+                    <a href="/templates" class="nav-link fw-semibold px-3 text-dark">
+                        <i class="bi bi-layout-text-window-reverse me-1"></i> Templates
+                    </a>
+                    <a href="/resumelist" class="nav-link fw-semibold px-3 text-dark">
+                        <i class="bi bi-folder2-open me-1"></i> My Resumes
+                    </a>
+                    <a href="/resume" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                        <i class="bi bi-plus-lg me-1"></i> Create Resume
+                    </a>
+                    <a href="/logout" class="btn btn-outline-danger rounded-pill px-3 fw-bold">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                {% else %}
+                    <a href="/" class="nav-link fw-semibold px-3 text-dark">Home</a>
+                    {% if request.path == "/login" %}
+                        <a href="/user" class="btn btn-primary rounded-pill px-4 fw-bold">Register</a>
+                    {% elif request.path == "/user" %}
+                        <a href="/login" class="btn btn-outline-primary rounded-pill px-4 fw-bold">Login</a>
+                    {% else %}
+                        <a href="/login" class="btn btn-outline-primary rounded-pill px-4 fw-bold">Login</a>
+                        <a href="/user" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">Register Free</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </nav>

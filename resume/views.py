@@ -1,182 +1,214 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
-from datetime import datetime
-from django.db.models import Sum
 from django.http import HttpResponse
-from .models import *
+from .models import Resume, User
 from django.template.loader import get_template
-from xhtml2pdf import pisa
-from django.core.mail import send_mail
-import razorpay
-from openai import OpenAI
-from django.conf import settings# from AI_Resume_Builder.resume.models import Resume
+from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password
+from openai import OpenAI
 import json
 
+# Windows-friendly PDF Engine
+from xhtml2pdf import pisa
+
+# OpenRouter AI Client Configuration
 client = OpenAI(
     api_key=settings.OPENROUTER_API_KEY,
     base_url="https://openrouter.ai/api/v1"
 )
 
+
 def home(request):
     return render(request, "index.html")
+
 
 def resume(request):
     if "log_id" not in request.session:
         messages.error(request, "Please login first")
         return redirect("/login")
-    return render(request, "resume.html")
+
+    current_user = User.objects.get(id=request.session["log_id"])
+    current_user.reset_daily_limit_if_needed()
+
+    return render(request, "resume.html", {
+        "generations_left": current_user.daily_generations_left,
+        "is_premium": current_user.is_premium
+    })
+
 
 def fetchresumedata(request):
     if "log_id" not in request.session:
         messages.error(request, "Please login first")
         return redirect("/login")
-    name = request.POST.get("name")
-    email = request.POST.get("email")
-    phone = request.POST.get("phone")
-    skills = request.POST.get("skills")
-    education = request.POST.get("education")
-    prompt = f"""
-You are an expert ATS Resume Writer.
 
-Candidate Details:
+    current_user = User.objects.get(id=request.session["log_id"])
 
-Name: {name}
-Education: {education}
-Skills: {skills}
-Experience: Fresher
-
-Generate a professional ATS-friendly resume.
-
-Return ONLY valid JSON.
-
-Use exactly this format:
-
-{{
-    "summary": "...",
-    "objective": "...",
-    "projects": "...",
-    "experience": "...",
-    "certifications": "...",
-    "achievements": "..."
-}}
-
-Rules:
-- Do not write markdown.
-- Do not use ```json.
-- Do not add explanation.
-- Do not add greetings.
-- Output must start with {{ and end with }} only.
-"""
-    try:
-        response = client.chat.completions.create(
-            model="openrouter/free",
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
-        )
-
-        ai_response = response.choices[0].message.content
-
-        print(ai_response)
-
-        resume_data = json.loads(ai_response)
-
-    except Exception as e:
-
-        print(e)
-
-        messages.error(request, "AI service is unavailable. Please try again.")
-
+    # 1. Enforce Daily Generation Limit
+    if not current_user.can_generate():
+        messages.error(request,
+                       "Aapki aaj ki 3 resume ki limit khatam ho chuki hai! Unlimited generation ke liye Premium lein.")
         return redirect("/resume")
 
-
-    selected_template = request.session.get("selected_template", 1)
-    insertquery = Resume(name=name,email=email,phone=phone,skills=skills,education=education,summary=resume_data["summary"],objective=resume_data["objective"],projects=resume_data["projects"],experience=resume_data["experience"],certifications=resume_data["certifications"],achievements=resume_data["achievements"],template_id=selected_template)
-    insertquery.save()
-    messages.success(request, "Successfully fetched resume data")
-    return redirect(f"/resumedetail/{insertquery.id}")
-
-def resumelist(request):
-    if "log_id" not in request.session:
-        messages.error(request, "Please login first")
-        return redirect("/login")
-    resumes =  Resume.objects.all()
-    return render(request, "resumelist.html", {"resumes":resumes})
-
-def resumedetail(request, id):
-
-    if "log_id" not in request.session:
-        messages.error(request,"Please login first")
-        return redirect("/login")
-
-    resume = Resume.objects.get(id=id)
-
-    skills = [skill.strip() for skill in resume.skills.split(",")]
-
-    if resume.template_id == 1:
-        template = "resume_modern.html"
-
-    elif resume.template_id == 2:
-        template = "resume_professional.html"
-
-    elif resume.template_id == 3:
-        template = "resume_minimal.html"
-
-    elif resume.template_id == 4:
-        template = "resume_creative.html"
-
-    else:
-        template = "resume_executive.html"
-
-    return render(request, template, {"resume": resume, "skills": skills})
-def editresume(request,id):
-    if "log_id" not in request.session:
-        messages.error(request, "Please login first")
-        return redirect("/login")
-    resume = Resume.objects.get(id=id)
-    return render(request, "editresume.html", {"resume":resume})
-
-def fetcheditresumedata(request, id):
-        if "log_id" not in request.session:
-            messages.error(request, "Please login first")
-            return redirect("/login")
-
+    if request.method == "POST":
         name = request.POST.get("name")
         email = request.POST.get("email")
         phone = request.POST.get("phone")
         skills = request.POST.get("skills")
         education = request.POST.get("education")
 
-        resume = Resume.objects.get(id=id)
+        # 2. Dynamic Multiple Projects Processing
+        project_titles = request.POST.getlist("project_title[]")
+        project_descs = request.POST.getlist("project_description[]")
 
-        resume.name = name
-        resume.email = email
-        resume.phone = phone
-        resume.skills = skills
-        resume.education = education
+        user_projects = []
+        for title, desc in zip(project_titles, project_descs):
+            if title.strip():
+                user_projects.append({"title": title, "description": desc})
 
-        resume.save()
+        # 3. OpenRouter AI Prompt Strategy
+        prompt = f"""
+You are an expert ATS Resume Writer.
 
-        messages.success(request, "Resume Updated Successfully")
+Candidate Details:
+Name: {name}
+Education: {education}
+Skills: {skills}
+Raw Projects Input: {json.dumps(user_projects)}
 
-        return redirect("/user")
+Task:
+1. Generate an impactful summary and objective.
+2. For each project provided, rewrite and polish the raw description into ATS-friendly bullet points with action verbs.
+
+Return ONLY valid JSON with no markdown syntax.
+Use exact schema:
+{{
+    "summary": "...",
+    "objective": "...",
+    "projects": [
+        {{
+            "title": "Project Name",
+            "description": "Enhanced bullet points describing technical impact..."
+        }}
+    ],
+    "experience": "...",
+    "certifications": "...",
+    "achievements": "..."
+}}
+"""
+        try:
+            response = client.chat.completions.create(
+                model="openrouter/free",
+                messages=[{"role": "user", "content": prompt}]
+            )
+
+            ai_response = response.choices[0].message.content.strip()
+
+            # Clean potential JSON markdown blocks
+            if ai_response.startswith("```json"):
+                ai_response = ai_response.replace("```json", "").replace("```", "").strip()
+
+            resume_data = json.loads(ai_response)
+
+        except Exception as e:
+            print("AI Processing Error:", e)
+            messages.error(request, "AI service error. Please try again.")
+            return redirect("/resume")
+
+        selected_template = request.session.get("selected_template", 1)
+
+        # 4. Save Resume Linked strictly to Logged-in User
+        insertquery = Resume.objects.create(
+            user=current_user,
+            name=name,
+            email=email,
+            phone=phone,
+            skills=skills,
+            education=education,
+            summary=resume_data.get("summary", ""),
+            objective=resume_data.get("objective", ""),
+            projects=resume_data.get("projects", user_projects),
+            experience=resume_data.get("experience", ""),
+            certifications=resume_data.get("certifications", ""),
+            achievements=resume_data.get("achievements", ""),
+            template_id=selected_template
+        )
+
+        # Deduct 1 Daily Generation
+        current_user.deduct_generation()
+
+        messages.success(request, f"Resume created! Daily generations left: {current_user.daily_generations_left}")
+        return redirect(f"/resumedetail/{insertquery.id}")
+
+
+def resumelist(request):
+    if "log_id" not in request.session:
+        messages.error(request, "Please login first")
+        return redirect("/login")
+
+    # PRIVACY ISOLATION: Fetch ONLY logged-in user's resumes
+    user_id = request.session["log_id"]
+    resumes = Resume.objects.filter(user_id=user_id).order_by('-created_at')
+
+    return render(request, "resumelist.html", {"resumes": resumes})
+
+
+def resumedetail(request, id):
+    if "log_id" not in request.session:
+        messages.error(request, "Please login first")
+        return redirect("/login")
+
+    # SECURITY CHECK: Verify ownership before rendering
+    resume = get_object_or_404(Resume, id=id, user_id=request.session["log_id"])
+    skills = [skill.strip() for skill in resume.skills.split(",")]
+
+    template_map = {
+        1: "resume_modern.html",
+        2: "resume_professional.html",
+        3: "resume_minimal.html",
+        4: "resume_creative.html"
+    }
+    template = template_map.get(resume.template_id, "resume_executive.html")
+
+    return render(request, template, {"resume": resume, "skills": skills})
+
+
+def editresume(request, id):
+    if "log_id" not in request.session:
+        messages.error(request, "Please login first")
+        return redirect("/login")
+
+    resume = get_object_or_404(Resume, id=id, user_id=request.session["log_id"])
+    return render(request, "editresume.html", {"resume": resume})
+
+
+def fetcheditresumedata(request, id):
+    if "log_id" not in request.session:
+        messages.error(request, "Please login first")
+        return redirect("/login")
+
+    resume = get_object_or_404(Resume, id=id, user_id=request.session["log_id"])
+
+    resume.name = request.POST.get("name")
+    resume.email = request.POST.get("email")
+    resume.phone = request.POST.get("phone")
+    resume.skills = request.POST.get("skills")
+    resume.education = request.POST.get("education")
+    resume.save()
+
+    messages.success(request, "Resume Updated Successfully")
+    return redirect("/resumelist")
+
 
 def deleteresume(request, id):
     if "log_id" not in request.session:
         messages.error(request, "Please login first")
         return redirect("/login")
 
-    resume = Resume.objects.get(id=id)
-
+    resume = get_object_or_404(Resume, id=id, user_id=request.session["log_id"])
     resume.delete()
 
     messages.success(request, "Resume Deleted Successfully")
-
     return redirect("/resumelist")
 
 
@@ -185,37 +217,35 @@ def resume_pdf(request, id):
         messages.error(request, "Please login first")
         return redirect("/login")
 
-    try:
-        resume = Resume.objects.get(id=id)
-    except Resume.DoesNotExist:
-        messages.error(request, "Resume not found")
-        return redirect("/user")
-
+    resume = get_object_or_404(Resume, id=id, user_id=request.session["log_id"])
     skills = [skill.strip() for skill in resume.skills.split(",")]
 
-    # 1. Template load karo
-    template = get_template("resume_modern.html")
-    html = template.render({
-        "resume": resume,
-        "skills": skills,
-        "pdf": True
-    })
+    template_map = {
+        1: "resume_modern.html",
+        2: "resume_professional.html",
+        3: "resume_minimal.html",
+        4: "resume_creative.html"
+    }
+    template_name = template_map.get(resume.template_id, "resume_executive.html")
 
-    # 2. HTTP Response create karo PDF content type ke saath
+    template = get_template(template_name)
+    html_content = template.render({"resume": resume, "skills": skills, "pdf": True})
+
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="Resume.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="{resume.name}_Resume.pdf"'
 
-    # 3. PDF generate karke response me daalo
-    pisa_status = pisa.CreatePDF(html, dest=response)
+    # Render PDF safely using xhtml2pdf
+    pisa_status = pisa.CreatePDF(html_content, dest=response)
 
-    # 4. Agar error nahi hai toh seedha response return karo
-    if not pisa_status.err:
-        return response
+    if pisa_status.err:
+        return HttpResponse('PDF Generation Error', status=500)
 
-    return HttpResponse('PDF Generation Error', status=500)
+    return response
+
 
 def user(request):
     return render(request, "User.html")
+
 
 def fetchuserdata(request):
     name = request.POST.get("name")
@@ -223,30 +253,36 @@ def fetchuserdata(request):
     phone = request.POST.get("phone")
     password = request.POST.get("password")
     confirm_password = request.POST.get("confirm_password")
+
     if password != confirm_password:
         messages.error(request, "Passwords do not match")
         return redirect("/user")
     if User.objects.filter(Email=email).exists():
         messages.error(request, "Email Already Exists")
         return redirect("/user")
+
     encrypt_password = make_password(password)
-    insertquery = User(Name=name,Email=email,Phone=phone,Password=encrypt_password)
-    insertquery.save()
-    messages.success(request, "Successfully fetched user data")
+    User.objects.create(Name=name, Email=email, Phone=phone, Password=encrypt_password)
+    messages.success(request, "Registration successful. Please login.")
     return redirect("/login")
+
 
 def login(request):
     return render(request, "login.html")
+
 
 def welcome(request):
     if "log_id" not in request.session:
         messages.error(request, "Please login first")
         return redirect("/login")
 
-    name = request.session["log_name"]
+    user_id = request.session["log_id"]
+    # Logged-in user ke saare resumes fetch karein
+    user_resumes = Resume.objects.filter(user_id=user_id).order_by('-created_at')
 
     return render(request, "welcome.html", {
-        "name": name
+        "name": request.session["log_name"],
+        "resumes": user_resumes
     })
 
 
@@ -257,47 +293,32 @@ def fetchlogindata(request):
     try:
         userdata = User.objects.get(Email=useremail)
         if check_password(userpass, userdata.Password):
-            print(userdata)
             request.session["log_id"] = userdata.id
             request.session["log_name"] = userdata.Name
             request.session["log_email"] = userdata.Email
-            print("Session Name", request.session["log_name"])
+            messages.success(request, "Successfully logged in")
+            return redirect("/welcome")
         else:
-            userdata = None
-    except:
-        print("No Such User")
-        userdata = None
+            messages.error(request, "Invalid Password")
+    except User.DoesNotExist:
+        messages.error(request, "User does not exist")
 
-    if userdata is not None:
-        messages.success(request, "Successfully logged in")
-        return redirect("/welcome")
-    else:
-        print("Login Failed")
-        messages.error(request, "Invalid User Name or Password")
-        return redirect("/login")
+    return redirect("/login")
+
 
 def logout(request):
-    try:
-        del request.session["log_id"]
-        del request.session["log_name"]
-        del request.session["log_email"]
-    except:
-        pass
-    messages.success(request, "You Have Been Logged Out Successfully.")
+    request.session.flush()
+    messages.success(request, "Logged out successfully.")
     return redirect("/user")
+
 
 def templates(request):
     if "log_id" not in request.session:
         messages.error(request, "Please login first")
         return redirect("/login")
-
     return render(request, "templates.html")
 
+
 def select_template(request, id):
-
     request.session["selected_template"] = id
-
-    print(request.session.get("selected_template"))
-
     return redirect("/resume")
-

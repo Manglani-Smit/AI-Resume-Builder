@@ -18,5 +18,5 @@ urlpatterns = [
     path("logout",views.logout, name="logout"),
     path("welcome",views.welcome, name="welcome"),
     path("templates", views.templates, name="templates"),
-    path("select-template/<int:id>", views.select_template)
+    path("select_template/<int:id>", views.select_template)
 ]

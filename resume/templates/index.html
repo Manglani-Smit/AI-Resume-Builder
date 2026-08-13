@@ -1,380 +1,294 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Builder - Build ATS-Friendly Resumes Instantly</title>
 
-<meta charset="UTF-8">
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .hero-section {
+            background: radial-gradient(circle at top right, #eef2ff 0%, #f8fafc 100%);
+            padding: 90px 0 70px;
+        }
 
-<title>AI Resume Builder</title>
+        .gradient-text {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+        .hover-card {
+            transition: all 0.3s ease;
+            border-radius: 16px;
+        }
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+        .hover-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08) !important;
+        }
 
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
+        .step-icon-box {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 24px;
+            font-weight: bold;
+        }
 
+        .cta-banner {
+            background: linear-gradient(135deg, #0d6efd 0%, #084298 100%);
+            border-radius: 24px;
+        }
+    </style>
 </head>
 
 <body class="bg-light">
 
-<!-- Navbar -->
-
-<nav class="navbar navbar-expand-lg bg-white shadow-sm">
-
-<div class="container">
-
-<a class="navbar-brand fw-bold text-success" href="/">
-
-AI Resume Builder
-
-</a>
-
-<div>
-
-<a href="/login" class="btn btn-outline-success me-2">
-
-Login
-
-</a>
-
-<a href="/user" class="btn btn-success">
-
-Register
-
-</a>
-
-</div>
-
-</div>
-
-</nav>
-
-<!-- Hero -->
-
-<section class="py-5">
-
-<div class="container">
-
-<div class="row align-items-center">
-
-<div class="col-lg-6">
-
-<h1 class="display-4 fw-bold">
-
-Create ATS Friendly Resume
-
-</h1>
-
-<p class="lead text-muted mt-3">
-
-Generate professional resumes using Artificial Intelligence in less than one minute.
-
-</p>
-
-<div class="mt-4">
-
-<a href="/user" class="btn btn-success btn-lg me-3">
-
-Get Started
-
-</a>
-
-<a href="/login" class="btn btn-outline-success btn-lg">
-
-Login
-
-</a>
-
-</div>
-
-</div>
-
-<div class="col-lg-6 text-center">
-
-<i class="bi bi-file-earmark-person-fill text-success"
-style="font-size:220px;"></i>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- Features -->
-
-<section class="py-5 bg-white">
-
-<div class="container">
-
-<h2 class="text-center fw-bold mb-5">
-
-Why Choose Us?
-
-</h2>
-
-<div class="row">
-
-<div class="col-md-4">
-
-<div class="card shadow border-0 h-100 text-center p-4">
-
-<i class="bi bi-robot text-success fs-1"></i>
-
-<h4 class="mt-3">
-
-AI Powered
-
-</h4>
-
-<p>
-
-Generate professional resume instantly.
-
-</p>
-
-</div>
-
-</div>
-
-<div class="col-md-4">
-
-<div class="card shadow border-0 h-100 text-center p-4">
-
-<i class="bi bi-file-earmark-check text-success fs-1"></i>
-
-<h4 class="mt-3">
-
-ATS Friendly
-
-</h4>
-
-<p>
-
-Designed to pass Applicant Tracking Systems.
-
-</p>
-
-</div>
-
-</div>
-
-<div class="col-md-4">
-
-<div class="card shadow border-0 h-100 text-center p-4">
-
-<i class="bi bi-download text-success fs-1"></i>
-
-<h4 class="mt-3">
-
-PDF Download
-
-</h4>
-
-<p>
-
-Download resumes in PDF format instantly.
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- Templates -->
-
-<section class="py-5">
-
-<div class="container">
-
-<h2 class="text-center fw-bold mb-5">
-
-Resume Templates
-
-</h2>
-
-<div class="row">
-
-{% for i in "12345" %}
-
-<div class="col-md-4 mb-4">
-
-<div class="card shadow">
-
-<div class="bg-secondary d-flex justify-content-center align-items-center"
-
-style="height:250px;">
-
-<h4 class="text-white">
-
-Template {{ i }}
-
-</h4>
-
-</div>
-
-<div class="card-body text-center">
-
-<h5>
-
-Professional Template
-
-</h5>
-
-<p class="text-muted">
-
-ATS Friendly Design
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-</div>
-
-</section>
-
-<!-- Steps -->
-
-<section class="py-5 bg-white">
-
-<div class="container">
-
-<h2 class="text-center fw-bold mb-5">
-
-How It Works
-
-</h2>
-
-<div class="row text-center">
-
-<div class="col-md-3">
-
-<h1 class="text-success">
-
-1
-
-</h1>
-
-<p>
-
-Register
-
-</p>
-
-</div>
-
-<div class="col-md-3">
-
-<h1 class="text-success">
-
-2
-
-</h1>
-
-<p>
-
-Choose Template
-
-</p>
-
-</div>
-
-<div class="col-md-3">
-
-<h1 class="text-success">
-
-3
-
-</h1>
-
-<p>
-
-Fill Details
-
-</p>
-
-</div>
-
-<div class="col-md-3">
-
-<h1 class="text-success">
-
-4
-
-</h1>
-
-<p>
-
-Download Resume
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- CTA -->
-
-<section class="py-5 text-center">
-
-<div class="container">
-
-<h2 class="fw-bold">
-
-Ready to Build Your Resume?
-
-</h2>
-
-<p class="lead">
-
-Create your ATS Resume today.
-
-</p>
-
-<a href="/user" class="btn btn-success btn-lg">
-
-Create Resume
-
-</a>
-
-</div>
-
-</section>
-
-<!-- Footer -->
-
-<footer class="bg-dark text-white text-center p-4">
-
-<p class="mb-0">
-
-AI Resume Builder • Django • Bootstrap • OpenRouter
-
-</p>
-
-</footer>
-
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" href="/">
+                <i class="bi bi-file-earmark-person-fill fs-3"></i> AI Resume Builder
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-2 mt-3 mt-lg-0">
+                    {% if request.session.log_id %}
+                        <li class="nav-item">
+                            <a href="/welcome" class="btn btn-outline-primary rounded-pill px-4 fw-bold">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/logout" class="btn btn-danger rounded-pill px-4 fw-bold">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a href="/login" class="btn btn-outline-primary rounded-pill px-4 fw-bold">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/user" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">Register Free</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <span class="badge bg-primary-subtle text-primary fw-bold px-3 py-2 rounded-pill mb-3">
+                        ⚡ Powered by OpenRouter AI
+                    </span>
+                    <h1 class="display-4 fw-bold lh-sm text-dark">
+                        Build <span class="gradient-text">ATS-Friendly</span> Resumes in Seconds
+                    </h1>
+                    <p class="lead text-secondary mt-3">
+                        Land more interviews with professionally formatted, AI-optimized resumes tailored for modern company standards.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 mt-4">
+                        {% if request.session.log_id %}
+                            <a href="/resume" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow-sm">
+                                Create Resume Now <i class="bi bi-arrow-right ms-2"></i>
+                            </a>
+                        {% else %}
+                            <a href="/user" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow-sm">
+                                Get Started Free <i class="bi bi-arrow-right ms-2"></i>
+                            </a>
+                            <a href="/login" class="btn btn-outline-secondary btn-lg rounded-pill px-4 fw-bold">
+                                Login
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex align-items-center gap-4 mt-4 text-muted small">
+                        <span><i class="bi bi-check-circle-fill text-success me-1"></i> No Credit Card Required</span>
+                        <span><i class="bi bi-check-circle-fill text-success me-1"></i> 3 Free Resumes/Day</span>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div class="position-relative d-inline-block">
+                        <div class="bg-white p-4 rounded-4 shadow-lg border">
+                            <i class="bi bi-file-earmark-pdf-fill text-primary display-1"></i>
+                            <h4 class="fw-bold mt-2 text-dark">ATS Optimized Format</h4>
+                            <p class="text-muted small mb-0">Parsed effortlessly by corporate ATS screeners</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5 bg-white">
+        <div class="container py-4">
+            <div class="text-center max-w-xl mx-auto mb-5">
+                <h2 class="fw-bold display-6">Why Job Seekers Love Us</h2>
+                <p class="text-muted">Everything you need to create a stand-out application</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100 p-4 text-center hover-card">
+                        <div class="bg-primary-subtle text-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-magic fs-3"></i>
+                        </div>
+                        <h4 class="fw-bold text-dark">AI-Powered Rewriting</h4>
+                        <p class="text-muted small">Transforms your basic skills and project descriptions into high-impact, professional bullet points.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100 p-4 text-center hover-card">
+                        <div class="bg-success-subtle text-success rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-shield-check fs-3"></i>
+                        </div>
+                        <h4 class="fw-bold text-dark">ATS Compliant</h4>
+                        <p class="text-muted small">Clean, single-column & double-column layouts structured to pass Applicant Tracking Systems easily.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100 p-4 text-center hover-card">
+                        <div class="bg-warning-subtle text-warning-emphasis rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-filetype-pdf fs-3"></i>
+                        </div>
+                        <h4 class="fw-bold text-dark">Instant PDF Export</h4>
+                        <p class="text-muted small">Download pixel-perfect, ready-to-send PDF files with one click anytime from your dashboard.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Templates Section -->
+    <section class="py-5">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold display-6">Designed for Every Profession</h2>
+                <p class="text-muted">Choose from 5 modern, recruiter-approved templates</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm hover-card overflow-hidden">
+                        <div class="bg-dark text-white p-4 text-center" style="height: 180px;">
+                            <h5 class="fw-bold mt-3">Modern</h5>
+                            <span class="badge bg-success">Popular</span>
+                        </div>
+                        <div class="card-body text-center">
+                            <h6 class="fw-bold text-dark">Modern Template</h6>
+                            <p class="text-muted small">Clean typography for technical roles</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm hover-card overflow-hidden">
+                        <div class="bg-primary text-white p-4 text-center" style="height: 180px;">
+                            <h5 class="fw-bold mt-3">Professional</h5>
+                            <span class="badge bg-light text-dark">Corporate</span>
+                        </div>
+                        <div class="card-body text-center">
+                            <h6 class="fw-bold text-dark">Professional Template</h6>
+                            <p class="text-muted small">Ideal for corporate & management jobs</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm hover-card overflow-hidden">
+                        <div class="bg-secondary text-white p-4 text-center" style="height: 180px;">
+                            <h5 class="fw-bold mt-3">Executive</h5>
+                            <span class="badge bg-warning text-dark">Senior Roles</span>
+                        </div>
+                        <div class="card-body text-center">
+                            <h6 class="fw-bold text-dark">Executive Template</h6>
+                            <p class="text-muted small">Structured for experienced professionals</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <a href="/templates" class="btn btn-outline-primary btn-lg rounded-pill px-5 fw-bold">
+                    View All Templates <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-5 bg-white">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold display-6">How It Works in 4 Easy Steps</h2>
+            </div>
+
+            <div class="row g-4 text-center">
+                <div class="col-md-3">
+                    <div class="step-icon-box bg-primary-subtle text-primary">1</div>
+                    <h5 class="fw-bold text-dark">Register Account</h5>
+                    <p class="text-muted small">Create your free account in less than a minute.</p>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="step-icon-box bg-primary-subtle text-primary">2</div>
+                    <h5 class="fw-bold text-dark">Pick a Template</h5>
+                    <p class="text-muted small">Select a layout that fits your job domain.</p>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="step-icon-box bg-primary-subtle text-primary">3</div>
+                    <h5 class="fw-bold text-dark">Fill Details</h5>
+                    <p class="text-muted small">Enter basic skills, experience, and projects.</p>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="step-icon-box bg-primary-subtle text-primary">4</div>
+                    <h5 class="fw-bold text-dark">Download PDF</h5>
+                    <p class="text-muted small">AI polishes the content and generates your PDF.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="cta-banner p-5 text-white text-center shadow-lg">
+                <h2 class="fw-bold display-6 mb-3">Ready to Land Your Dream Job?</h2>
+                <p class="lead opacity-90 mb-4">Start building your ATS-friendly resume today for free.</p>
+                <a href="/user" class="btn btn-light btn-lg rounded-pill px-5 fw-bold text-primary shadow-sm">
+                    Create Your Resume Now
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white-50 py-4 text-center">
+        <div class="container">
+            <p class="mb-0 small">
+                AI Resume Builder &bull; Built with Django, Bootstrap 5 & OpenRouter AI
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.bundle.min.css"></script>
 </body>
 
 </html>

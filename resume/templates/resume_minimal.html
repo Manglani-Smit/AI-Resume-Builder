@@ -1,122 +1,87 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
-
-<title>Minimal Resume</title>
-
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <title>Minimal Resume - {{ resume.name }}</title>
+    <style>
+        body { background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .resume-paper { max-width: 800px; margin: 0 auto; padding: 40px; }
+        h5 { font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #555; margin-top: 25px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+    </style>
 </head>
+<body>
 
-<body class="bg-light">
+<div class="container my-4">
+    <div class="resume-paper border">
+        <div class="border-bottom pb-3 mb-4">
+            <h1 class="text-uppercase fw-bold text-dark tracking-wide mb-1">{{ resume.name }}</h1>
+            <p class="text-muted small mb-0">
+                <i class="bi bi-envelope me-1"></i>{{ resume.email }} &nbsp;•&nbsp;
+                <i class="bi bi-telephone me-1"></i>{{ resume.phone }}
+            </p>
+        </div>
 
-<div class="container mt-5">
+        {% if resume.summary %}
+            <h5>Summary</h5>
+            <p class="text-dark">{{ resume.summary }}</p>
+        {% endif %}
 
-<div class="resume-paper">
+        {% if resume.objective %}
+            <h5>Objective</h5>
+            <p class="text-dark">{{ resume.objective }}</p>
+        {% endif %}
 
-    <div class="border-bottom pb-3 mb-4">
+        {% if resume.projects %}
+            <h5>Projects</h5>
+            {% if resume.projects|length > 0 %}
+                {% for proj in resume.projects %}
+                    <div class="mb-2">
+                        <span class="fw-bold">• {{ proj.title }}:</span>
+                        <span class="text-secondary">{{ proj.description }}</span>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-dark">{{ resume.projects }}</p>
+            {% endif %}
+        {% endif %}
 
-        <h2 class="text-uppercase fw-bold">
+        <h5>Skills</h5>
+        <div class="d-flex flex-wrap gap-2">
+            {% for skill in skills %}
+                <span class="border px-2 py-1 bg-light rounded text-dark small">{{ skill }}</span>
+            {% endfor %}
+        </div>
 
-            {{ resume.name }}
+        <h5>Education</h5>
+        <p class="text-dark">{{ resume.education|linebreaks }}</p>
 
-        </h2>
+        {% if resume.experience %}
+            <h5>Experience</h5>
+            <p class="text-dark">{{ resume.experience|linebreaks }}</p>
+        {% endif %}
 
-        <small class="text-muted">
+        {% if resume.certifications %}
+            <h5>Certifications</h5>
+            <p class="text-dark">{{ resume.certifications|linebreaks }}</p>
+        {% endif %}
 
-            <i class="bi bi-envelope"></i>
-
-            {{ resume.email }}
-
-            &nbsp;&nbsp;
-
-            <i class="bi bi-telephone"></i>
-
-            {{ resume.phone }}
-
-        </small>
-
+        {% if resume.achievements %}
+            <h5>Achievements</h5>
+            <p class="text-dark">{{ resume.achievements|linebreaks }}</p>
+        {% endif %}
     </div>
 
-    <h5>Career Objective</h5>
-
-    <p>{{ resume.objective }}</p>
-
-    <br>
-
-    <h5>Professional Summary</h5>
-
-    <p>{{ resume.summary }}</p>
-
-    <br>
-
-    <h5>Projects</h5>
-
-    <p>{{ resume.projects }}</p>
-
-    <br>
-
-    <h5>Skills</h5>
-
-    <ul>
-
-        {% for skill in skills %}
-
-        <li>{{ skill }}</li>
-
-        {% endfor %}
-
-    </ul>
-
-    <br>
-
-    <h5>Education</h5>
-
-    <p>{{ resume.education }}</p>
-
-    <br>
-
-    <h5>Experience</h5>
-
-    <p>{{ resume.experience }}</p>
-
-    <br>
-
-    <h5>Certifications</h5>
-
-    <p>{{ resume.certifications }}</p>
-
-    <br>
-
-    <h5>Achievements</h5>
-
-    <p>{{ resume.achievements }}</p>
-
-</div>
-
-{% if not pdf %}
-
-<div class="text-center mt-4">
-
-<a href="/resume_pdf/{{ resume.id }}"
-class="btn btn-success">
-
-Download PDF
-
-</a>
-
-</div>
-
-{% endif %}
-
+    {% if not pdf %}
+        <div class="text-center my-4">
+            <a href="/resume_pdf/{{ resume.id }}" class="btn btn-outline-dark px-5 rounded-pill fw-bold">
+                <i class="bi bi-download me-2"></i> Download Minimal PDF
+            </a>
+        </div>
+    {% endif %}
 </div>
 
 </body>
-
 </html>
