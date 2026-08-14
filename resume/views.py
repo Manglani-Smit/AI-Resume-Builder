@@ -6,6 +6,7 @@ from .models import Resume, User
 from django.template.loader import get_template
 from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth import logout as auth_logout  # Added for Google Logout
 from openai import OpenAI
 import json
 
@@ -19,16 +20,53 @@ client = OpenAI(
 )
 
 
+# ==========================================
+# HELPER FUNCTION: Bridging Google Auth & Custom Auth
+# ==========================================
+def get_current_user(request):
+    """
+    Check karta hai ki user Google se aaya hai ya Manual Login se.
+    Agar Google se aaya hai, toh usko hamare custom User table mein automatically save kar deta hai.
+    """
+    # 1. Check if user is logged in via Google (Django Allauth)
+    if request.user.is_authenticated:
+        email = request.user.email
+        name = request.user.first_name or request.user.username
+
+        # Google user ko apne custom User table ke sath link/create karo
+        custom_user, created = User.objects.get_or_create(
+            Email=email,
+            defaults={
+                'Name': name,
+                'Password': 'google_auth_user'  # Dummy password for Google users
+            }
+        )
+        return custom_user
+
+    # 2. Check if user is logged in via Manual Session (Old way)
+    if "log_id" in request.session:
+        try:
+            return User.objects.get(id=request.session["log_id"])
+        except User.DoesNotExist:
+            return None
+
+    # 3. User is not logged in at all
+    return None
+
+
+# ==========================================
+
+
 def home(request):
     return render(request, "index.html")
 
 
 def resume(request):
-    if "log_id" not in request.session:
+    current_user = get_current_user(request)
+    if not current_user:
         messages.error(request, "Please login first")
         return redirect("/login")
 
-    current_user = User.objects.get(id=request.session["log_id"])
     current_user.reset_daily_limit_if_needed()
 
     return render(request, "resume.html", {
@@ -38,11 +76,10 @@ def resume(request):
 
 
 def fetchresumedata(request):
-    if "log_id" not in request.session:
+    current_user = get_current_user(request)
+    if not current_user:
         messages.error(request, "Please login first")
         return redirect("/login")
-
-    current_user = User.objects.get(id=request.session["log_id"])
 
     # 1. Enforce Daily Generation Limit
     if not current_user.can_generate():
@@ -117,7 +154,7 @@ Use exact schema:
 
         selected_template = request.session.get("selected_template", 1)
 
-        # 4. Save Resume Linked strictly to Logged-in User
+        # 4. Save Resume Linked strictly to Bridged Logged-in User
         insertquery = Resume.objects.create(
             user=current_user,
             name=name,
@@ -142,24 +179,25 @@ Use exact schema:
 
 
 def resumelist(request):
-    if "log_id" not in request.session:
+    current_user = get_current_user(request)
+    if not current_user:
         messages.error(request, "Please login first")
         return redirect("/login")
 
     # PRIVACY ISOLATION: Fetch ONLY logged-in user's resumes
-    user_id = request.session["log_id"]
-    resumes = Resume.objects.filter(user_id=user_id).order_by('-created_at')
+    resumes = Resume.objects.filter(user=current_user).order_by('-created_at')
 
     return render(request, "resumelist.html", {"resumes": resumes})
 
 
 def resumedetail(request, id):
-    if "log_id" not in request.session:
+    current_user = get_current_user(request)
+    if not current_user:
         messages.error(request, "Please login first")
         return redirect("/login")
 
     # SECURITY CHECK: Verify ownership before rendering
-    resume = get_object_or_404(Resume, id=id, user_id=request.session["log_id"])
+    resume = get_object_or_404(Resume, id=id, user=current_user)
     skills = [skill.strip() for skill in resume.skills.split(",")]
 
     template_map = {
@@ -174,20 +212,22 @@ def resumedetail(request, id):
 
 
 def editresume(request, id):
-    if "log_id" not in request.session:
+    current_user = get_current_user(request)
+    if not current_user:
         messages.error(request, "Please login first")
         return redirect("/login")
 
-    resume = get_object_or_404(Resume, id=id, user_id=request.session["log_id"])
+    resume = get_object_or_404(Resume, id=id, user=current_user)
     return render(request, "editresume.html", {"resume": resume})
 
 
 def fetcheditresumedata(request, id):
-    if "log_id" not in request.session:
+    current_user = get_current_user(request)
+    if not current_user:
         messages.error(request, "Please login first")
         return redirect("/login")
 
-    resume = get_object_or_404(Resume, id=id, user_id=request.session["log_id"])
+    resume = get_object_or_404(Resume, id=id, user=current_user)
 
     resume.name = request.POST.get("name")
     resume.email = request.POST.get("email")
@@ -201,11 +241,12 @@ def fetcheditresumedata(request, id):
 
 
 def deleteresume(request, id):
-    if "log_id" not in request.session:
+    current_user = get_current_user(request)
+    if not current_user:
         messages.error(request, "Please login first")
         return redirect("/login")
 
-    resume = get_object_or_404(Resume, id=id, user_id=request.session["log_id"])
+    resume = get_object_or_404(Resume, id=id, user=current_user)
     resume.delete()
 
     messages.success(request, "Resume Deleted Successfully")
@@ -213,11 +254,12 @@ def deleteresume(request, id):
 
 
 def resume_pdf(request, id):
-    if "log_id" not in request.session:
+    current_user = get_current_user(request)
+    if not current_user:
         messages.error(request, "Please login first")
         return redirect("/login")
 
-    resume = get_object_or_404(Resume, id=id, user_id=request.session["log_id"])
+    resume = get_object_or_404(Resume, id=id, user=current_user)
     skills = [skill.strip() for skill in resume.skills.split(",")]
 
     template_map = {
@@ -272,16 +314,17 @@ def login(request):
 
 
 def welcome(request):
-    if "log_id" not in request.session:
+    current_user = get_current_user(request)
+
+    if not current_user:
         messages.error(request, "Please login first")
         return redirect("/login")
 
-    user_id = request.session["log_id"]
-    # Logged-in user ke saare resumes fetch karein
-    user_resumes = Resume.objects.filter(user_id=user_id).order_by('-created_at')
+    # Fetch ONLY resumes for the bridged user
+    user_resumes = Resume.objects.filter(user=current_user).order_by('-created_at')
 
     return render(request, "welcome.html", {
-        "name": request.session["log_name"],
+        "name": current_user.Name,
         "resumes": user_resumes
     })
 
@@ -307,13 +350,17 @@ def fetchlogindata(request):
 
 
 def logout(request):
+    # Dono sessions (Google & Manual) ko clear karna zaroori hai
+    auth_logout(request)
     request.session.flush()
+
     messages.success(request, "Logged out successfully.")
-    return redirect("/user")
+    return redirect("/login")
 
 
 def templates(request):
-    if "log_id" not in request.session:
+    current_user = get_current_user(request)
+    if not current_user:
         messages.error(request, "Please login first")
         return redirect("/login")
     return render(request, "templates.html")

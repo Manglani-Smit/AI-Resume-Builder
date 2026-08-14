@@ -17,7 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from django.urls import path, include
+
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", include("resume.urls")),
+    path('admin/', admin.site.urls),
+    path('accounts/', include('allauth.urls')),  # Google OAuth routes
+    path('', include('resume.urls')),           # Aapke app ke URLs
 ]

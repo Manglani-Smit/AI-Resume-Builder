@@ -1,0 +1,85 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In With Google - AI Resume Builder</title>
+
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        .auth-card {
+            border-radius: 20px;
+            transition: transform 0.2s ease;
+            border: none;
+        }
+        .google-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            background-color: #f8f9fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+{% include 'nav.html' %}
+
+<div class="container my-5 py-5">
+    <div class="row align-items-center justify-content-center">
+        <div class="col-lg-5 col-md-7 col-sm-10">
+            <div class="card auth-card shadow-lg bg-white p-4 p-md-5 text-center">
+
+                <!-- Google Logo Wrapper -->
+                <div class="google-icon-wrapper shadow-sm border">
+                    <svg width="40" height="40" viewBox="0 0 48 48">
+                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                    </svg>
+                </div>
+
+                <h3 class="fw-bold text-dark mb-2">Sign In via Google</h3>
+                <p class="text-muted mb-4">You are about to securely sign in to your AI Resume Builder account using Google.</p>
+
+                <!-- Django Allauth Form -->
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-dark btn-lg rounded-pill fw-bold py-2 shadow-sm">
+                            Continue <i class="bi bi-arrow-right ms-1"></i>
+                        </button>
+
+                        <!-- Cancel Button redirects back to your custom login page -->
+                        <a href="/login" class="btn btn-outline-secondary rounded-pill fw-bold py-2">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+
+            </div>
+
+            <!-- Security Disclaimer -->
+            <div class="text-center mt-4">
+                <p class="small text-muted"><i class="bi bi-shield-check text-success"></i> Secure 256-bit SSL connection</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.bundle.min.css"></script>
+</body>
+</html>

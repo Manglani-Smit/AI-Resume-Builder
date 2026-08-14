@@ -40,8 +40,40 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'resume',
+    'django.contrib.sites',          # Required by allauth
+
+    # Allauth Apps
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
+    'resume',  # Aapka app
 ]
+
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# Login Redirects
+LOGIN_REDIRECT_URL = '/welcome'
+LOGOUT_REDIRECT_URL = '/'
+
+# Google Provider Configuration
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -51,6 +83,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'AI_Resume_Builder.urls'
@@ -58,7 +91,8 @@ ROOT_URLCONF = 'AI_Resume_Builder.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # 👇 YAHAN PAR MAINE CHANGE KIYA HAI 👇
+        'DIRS': [BASE_DIR / 'resume' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
