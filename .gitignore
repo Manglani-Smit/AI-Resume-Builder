@@ -1,10 +1,25 @@
-# Sensitive keys (Security)
+# Sensitive environment variables (API keys, secrets)
 .env
+*.env
 
-# Database
+# SQLite local database
 *.sqlite3
 db.sqlite3
 
-# Python cache (Clean repo ke liye)
+# Python bytecode and cache
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# PyCharm / IDE settings
+.idea/
+.vscode/
+
+# Static and media generated files
+staticfiles/
+media/
+
+# Virtual Environment (agar project folder ke andar banta hai)
+venv/
+env/
+.venv/
