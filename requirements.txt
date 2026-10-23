@@ -4,3 +4,4 @@ whitenoise
 python-dotenv
 requests
 django-allauth
+openai
