@@ -6,3 +6,5 @@ requests
 django-allauth
 openai
 xhtml2pdf
+PyJWT
+cryptography
